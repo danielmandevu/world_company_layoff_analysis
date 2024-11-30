@@ -127,6 +127,7 @@ where percentage_laid_off is null or  percentage_laid_off = 'null' OR total_laid
 
 ALTER TABLE layoffs_stage2
 MODIFY funds_raised_millions int;
+
 UPDATE layoffs_stage2
 SET funds_raised_millions = NULL
 where funds_raised_millions = 'null' OR funds_raised_millions = '';
@@ -139,8 +140,11 @@ DELETE
 FROM layoffs_stage2
 WHERE percentage_laid_off is null AND  total_laid_off is null;
 
+ALTER TABLE layoffs_stage2
+MODIFY COLUMN total_laid_off int;
+
+ALTER TABLE layoffs_stage2
+MODIFY COLUMN percentage_laid_off float;
+
+
 SELECT * FROM layoffs_stage2;
-
-
-
-
