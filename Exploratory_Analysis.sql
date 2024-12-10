@@ -28,18 +28,49 @@ group by country order by 2 desc;
 -- lay offs per year
 select year(`date`) as `year`, sum(total_laid_off) 
 from layoffs_stage2
+where year(`date`) is not null
 group by `year`
 order by 1 desc;
 
--- company lay off per year
-with company_layoff_yearly(company,`year`,total_off) as (
-	select company, year(`date`) as `year`, sum(total_laid_off) over(partition by company order by year(`date`))
-	from layoffs_stage2)
-    select `year`, total_off from company_layoff_yearly
-    group by `year`
-    ;
-
--- company monthly layoffs
+-- company yearly layoffs
 select company, `date`, sum(total_laid_off)
 from layoffs_stage2
 group by company, `date`;
+
+-- Rank company lay off per year
+with company_year(company,total_off,`year`) as (
+	select company, sum(total_laid_off), year(`date`)
+	from layoffs_stage2
+	group by company, year(`date`)
+), company_year_rank as (
+	select *,
+	dense_rank() over(partition by `year` order by total_off  desc) as ranking
+	from company_year
+	where `year` is not null
+    ) 
+    select * from company_year_rank -- select the top 5 companys per year with most lay offs
+	where ranking <= 5; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
